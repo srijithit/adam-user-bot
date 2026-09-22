@@ -370,8 +370,13 @@ class LicensePanelView(discord.ui.View):
 # ==========================================
 # WEB SERVER FOR RENDER FREE TIER
 # ==========================================
+_web_server_started = False
+
 async def start_web_server():
     """Starts a lightweight HTTP server so Render Web Service (Free Tier) stays healthy."""
+    global _web_server_started
+    if _web_server_started:
+        return
     from aiohttp import web
     app = web.Application()
     app.router.add_get('/', lambda req: web.Response(text="Discord License Bot is Online 24/7!"))
@@ -380,7 +385,9 @@ async def start_web_server():
     port = int(os.getenv("PORT", 8080))
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
+    _web_server_started = True
     print(f"[*] HTTP health server started on port {port}")
+
 
 
 # ==========================================
